@@ -8,13 +8,32 @@ Equip Claude Desktop, Claude Code, Cursor, Windsurf, Zed, Muse, and custom agent
 
 ## 1. Quickstart
 
-### Option A: Run via `npx` (No Install Required)
+### Option A: Hosted Remote URL (Zero-Install, Recommended for Cursor & Web)
+
+Directly connect via Streamable HTTP — no Node.js or local package installation required:
+
+```json
+{
+  "mcpServers": {
+    "wirebox": {
+      "url": "https://api.wirebox.sh/api/v1/mcp",
+      "headers": {
+        "Authorization": "Bearer wb_live_..."
+      }
+    }
+  }
+}
+```
+
+*Tip: Cursor also supports appending your key directly to the URL: `https://api.wirebox.sh/api/v1/mcp?apiKey=wb_live_...`*
+
+### Option B: Run via `npx` (Local Stdio Bridge)
 
 ```bash
 npx -y @wirebox-sh/mcp
 ```
 
-### Option B: Claude Desktop Configuration
+### Option C: Claude Desktop Configuration (Stdio)
 
 Add the following to your `claude_desktop_config.json` (macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`):
 
@@ -33,7 +52,7 @@ Add the following to your `claude_desktop_config.json` (macOS: `~/Library/Applic
 }
 ```
 
-### Option C: Cursor / Windsurf
+### Option D: Cursor / Windsurf (Stdio)
 
 Add to `.cursor/mcp.json` or your Cursor Settings:
 
@@ -52,7 +71,7 @@ Add to `.cursor/mcp.json` or your Cursor Settings:
 }
 ```
 
-### Option D: Claude Code
+### Option E: Claude Code
 
 ```bash
 claude mcp add wirebox -- npx -y @wirebox-sh/mcp
