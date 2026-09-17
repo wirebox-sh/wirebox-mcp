@@ -1,0 +1,21 @@
+{
+  "name": "wirebox",
+  "description": "Wirebox communication tools for AI agents — iMessage, email, and identity management.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Wirebox",
+    "email": "hello@wirebox.sh"
+  },
+  "homepage": "https://wirebox.sh",
+  "repository": "https://github.com/wirebox-sh/wirebox-mcp",
+  "mcpServers": {
+    "wirebox": {
+      "command": "npx",
+      "args": ["-y", "@wirebox-sh/mcp"],
+      "env": {
+        "WIREBOX_API_KEY": "${WIREBOX_API_KEY}",
+        "WIREBOX_IDENTITY": "${WIREBOX_IDENTITY}"
+      }
+    }
+  }
+}
