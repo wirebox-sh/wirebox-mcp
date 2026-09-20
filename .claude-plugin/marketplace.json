@@ -1,0 +1,22 @@
+{
+  "name": "wirebox",
+  "owner": {
+    "name": "Wirebox",
+    "email": "hello@wirebox.sh"
+  },
+  "metadata": {
+    "description": "Wirebox communication tools for AI agents — iMessage, email, and identity management."
+  },
+  "plugins": [
+    {
+      "name": "wirebox",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/wirebox-sh/wirebox-mcp.git",
+        "ref": "main"
+      },
+      "description": "Wirebox communication tools for AI agents — iMessage, email, and identity management.",
+      "category": "Productivity"
+    }
+  ]
+}

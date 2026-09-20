@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <rect width="24" height="24" rx="6" fill="#0284c7" />
+  <!-- Ink rather than white: on this blue it measures 4.70:1 against white's
+       4.10:1. Scaled to 0.8 with a heavier stroke so the lines survive 16px —
+       at the mark's own weight they render near one device pixel and blur. -->
+  <g transform="translate(12 12) scale(0.8) translate(-12 -12)"
+     fill="none" stroke="#0e0e12" stroke-width="3.1"
+     stroke-linecap="round" stroke-linejoin="round">
+    <rect x="5" y="5" width="14" height="14" rx="3.5" />
+    <path d="M1.6 8.5H5M1.6 15.5H5M12 1.6V5M19 12h3.4M12 19v3.4" />
+    <circle cx="12" cy="12" r="2.1" fill="#0e0e12" stroke="none" />
+  </g>
+</svg>

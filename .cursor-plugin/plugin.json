@@ -18,13 +18,33 @@
     "ai-agent",
     "identity"
   ],
+  "logo": "./assets/logo.svg",
   "mcpServers": {
     "wirebox": {
       "command": "npx",
-      "args": ["-y", "@wirebox-sh/mcp"],
+      "args": [
+        "-y",
+        "@wirebox-sh/mcp"
+      ],
       "env": {
         "WIREBOX_API_KEY": "${WIREBOX_API_KEY}",
         "WIREBOX_IDENTITY": "${WIREBOX_IDENTITY}"
+      }
+    }
+  },
+  "variables": {
+    "type": "object",
+    "required": [
+      "WIREBOX_API_KEY"
+    ],
+    "properties": {
+      "WIREBOX_API_KEY": {
+        "type": "string",
+        "description": "Wirebox API key from https://wirebox.sh/console (starts with wb_live_ or wb_test_)."
+      },
+      "WIREBOX_IDENTITY": {
+        "type": "string",
+        "description": "Agent identity handle to act as. Optional when the key is scoped to one identity."
       }
     }
   }

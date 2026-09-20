@@ -1,0 +1,18 @@
+{
+  "name": "wirebox",
+  "owner": {
+    "name": "Wirebox",
+    "email": "hello@wirebox.sh"
+  },
+  "metadata": {
+    "description": "Give your agent real-world communication channels: iMessage, email, and agent identity management."
+  },
+  "plugins": [
+    {
+      "name": "wirebox",
+      "source": ".",
+      "description": "Give your agent real-world communication channels: iMessage, email, and agent identity management.",
+      "category": "Productivity"
+    }
+  ]
+}
