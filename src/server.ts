@@ -15,6 +15,26 @@ import {
   handleMailDelete,
 } from "./tools/mail.js";
 
+/**
+ * The `identity` parameter, unless the host has pinned the identity — in which
+ * case the model never sees the knob at all.
+ */
+function identityParam(config: ServerConfig): Record<string, z.ZodTypeAny> {
+  if (config.lockIdentity) return {};
+  return {
+    identity: z
+      .string()
+      .optional()
+      .describe("Agent identity handle or ID to act as. Defaults to WIREBOX_IDENTITY."),
+  };
+}
+
+/** The identity a call acts as; a pinned identity overrides what was asked for. */
+function resolveIdentity(config: ServerConfig, requested?: string): string | undefined {
+  if (config.lockIdentity) return config.defaultIdentity;
+  return requested || config.defaultIdentity;
+}
+
 export function createServer(customConfig?: Partial<ServerConfig>) {
   const config = { ...loadConfig(), ...customConfig };
 
@@ -51,10 +71,7 @@ export function createServer(customConfig?: Partial<ServerConfig>) {
         .string()
         .optional()
         .describe("Existing iMessage conversation ID. Optional if recipient 'to' is provided."),
-      identity: z
-        .string()
-        .optional()
-        .describe("Agent identity handle or ID to send from. Defaults to WIREBOX_IDENTITY."),
+      ...identityParam(config),
     },
     async (params: {
       text: string;
@@ -63,7 +80,10 @@ export function createServer(customConfig?: Partial<ServerConfig>) {
       identity?: string;
     }) => {
       const client = getClient(config);
-      const result = await handleImessageSend(client, config, params);
+      const result = await handleImessageSend(client, config, {
+        ...params,
+        identity: resolveIdentity(config, params.identity),
+      });
       return {
         content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
       };
@@ -77,7 +97,7 @@ export function createServer(customConfig?: Partial<ServerConfig>) {
     {
       limit: z.number().optional().describe("Maximum number of conversations to return (default 20)."),
       cursor: z.string().optional().describe("Pagination cursor for next page."),
-      identity: z.string().optional().describe("Agent identity handle or ID. Defaults to WIREBOX_IDENTITY."),
+      ...identityParam(config),
     },
     async (params: {
       limit?: number;
@@ -85,7 +105,10 @@ export function createServer(customConfig?: Partial<ServerConfig>) {
       identity?: string;
     }) => {
       const client = getClient(config);
-      const result = await handleImessageListConversations(client, config, params);
+      const result = await handleImessageListConversations(client, config, {
+        ...params,
+        identity: resolveIdentity(config, params.identity),
+      });
       return {
         content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
       };
@@ -100,7 +123,7 @@ export function createServer(customConfig?: Partial<ServerConfig>) {
       conversationId: z.string().describe("iMessage conversation ID."),
       limit: z.number().optional().describe("Maximum number of messages to return (default 50)."),
       cursor: z.string().optional().describe("Pagination cursor for next page."),
-      identity: z.string().optional().describe("Agent identity handle or ID. Defaults to WIREBOX_IDENTITY."),
+      ...identityParam(config),
     },
     async (params: {
       conversationId: string;
@@ -109,7 +132,10 @@ export function createServer(customConfig?: Partial<ServerConfig>) {
       identity?: string;
     }) => {
       const client = getClient(config);
-      const result = await handleImessageGetMessages(client, config, params);
+      const result = await handleImessageGetMessages(client, config, {
+        ...params,
+        identity: resolveIdentity(config, params.identity),
+      });
       return {
         content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
       };
@@ -124,7 +150,7 @@ export function createServer(customConfig?: Partial<ServerConfig>) {
       to: z.string().describe("Recipient email address."),
       subject: z.string().describe("Email subject line."),
       body: z.string().describe("Email plain text or HTML body content."),
-      identity: z.string().optional().describe("Agent identity handle or ID. Defaults to WIREBOX_IDENTITY."),
+      ...identityParam(config),
     },
     async (params: {
       to: string;
@@ -133,7 +159,10 @@ export function createServer(customConfig?: Partial<ServerConfig>) {
       identity?: string;
     }) => {
       const client = getClient(config);
-      const result = await handleMailSend(client, config, params);
+      const result = await handleMailSend(client, config, {
+        ...params,
+        identity: resolveIdentity(config, params.identity),
+      });
       return {
         content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
       };
@@ -151,7 +180,7 @@ export function createServer(customConfig?: Partial<ServerConfig>) {
         .enum(["queued", "sent", "delivered", "bounced", "failed"])
         .optional()
         .describe("Filter by message status."),
-      identity: z.string().optional().describe("Agent identity handle or ID. Defaults to WIREBOX_IDENTITY."),
+      ...identityParam(config),
     },
     async (params: {
       limit?: number;
@@ -160,7 +189,10 @@ export function createServer(customConfig?: Partial<ServerConfig>) {
       identity?: string;
     }) => {
       const client = getClient(config);
-      const result = await handleMailList(client, config, params);
+      const result = await handleMailList(client, config, {
+        ...params,
+        identity: resolveIdentity(config, params.identity),
+      });
       return {
         content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
       };

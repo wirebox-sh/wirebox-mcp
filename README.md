@@ -92,6 +92,7 @@ Or install as a plugin from the repository root:
 | `WIREBOX_API_KEY` | **Yes** | Your Wirebox secret API key (starts with `wb_live_` or `wb_test_`). Get one at [wirebox.sh/console](https://wirebox.sh). |
 | `WIREBOX_IDENTITY` | No | Default agent handle (e.g. `alice`) to scope communication actions. |
 | `WIREBOX_BASE_URL` | No | Override the API base URL (defaults to `https://api.wirebox.sh`). |
+| `WIREBOX_IDENTITY_LOCKED` | No | Set to `1` to pin every call to `WIREBOX_IDENTITY` and hide the `identity` parameter from the model. Use it wherever the agent answers people you do not control — a messaging bridge, say — so a message cannot talk it into acting as another identity the key owns. An identity-scoped API key enforces the same thing server-side and is the stronger option where available. |
 
 ---
 

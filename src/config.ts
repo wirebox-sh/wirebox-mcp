@@ -6,6 +6,16 @@ export interface ServerConfig {
   defaultIdentity?: string;
   mode?: "remote" | "local" | "auto";
   mcpUrl?: string;
+  /**
+   * Pins every tool call to `defaultIdentity` and hides the `identity`
+   * parameter from the model.
+   *
+   * Meant for hosts that answer strangers — a messaging bridge, say — where
+   * which identity the agent speaks as is the host's decision, not something a
+   * message should be able to steer. An identity-scoped API key enforces the
+   * same thing server-side; this closes the gap for organization-wide keys.
+   */
+  lockIdentity?: boolean;
 }
 
 export function loadConfig(): ServerConfig {
@@ -13,6 +23,7 @@ export function loadConfig(): ServerConfig {
   const baseUrl = process.env.WIREBOX_BASE_URL || undefined;
   const defaultIdentity = process.env.WIREBOX_IDENTITY || undefined;
   const mode = (process.env.WIREBOX_MCP_MODE as any) || "auto";
+  const lockIdentity = /^(1|true|yes)$/i.test(process.env.WIREBOX_IDENTITY_LOCKED || "");
   const mcpUrl =
     process.env.WIREBOX_MCP_URL ||
     (baseUrl
@@ -25,6 +36,7 @@ export function loadConfig(): ServerConfig {
     defaultIdentity,
     mode,
     mcpUrl,
+    lockIdentity,
   };
 }
 
