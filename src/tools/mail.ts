@@ -69,3 +69,79 @@ export async function handleMailList(
     },
   };
 }
+
+export async function handleMailGet(
+  client: Wirebox,
+  config: ServerConfig,
+  params: {
+    messageId: string;
+    identity?: string;
+  }
+) {
+  const identity = await resolveIdentity(client, config, params.identity);
+  const message = await identity.getMessage(params.messageId);
+
+  return {
+    id: message.id,
+    mailboxId: message.mailbox_id,
+    direction: message.direction,
+    status: message.status,
+    from: message.from_address,
+    to: message.to_addresses,
+    cc: message.cc_addresses,
+    bcc: message.bcc_addresses,
+    replyTo: message.reply_to,
+    subject: message.subject,
+    text: message.text,
+    html: message.html,
+    attachments: message.attachments,
+    createdAt: message.created_at,
+  };
+}
+
+export async function handleMailReply(
+  client: Wirebox,
+  config: ServerConfig,
+  params: {
+    messageId: string;
+    body: string;
+    html?: string;
+    to?: string;
+    cc?: string;
+    bcc?: string;
+    identity?: string;
+  }
+) {
+  const identity = await resolveIdentity(client, config, params.identity);
+  const result = await identity.replyEmail(params.messageId, {
+    text: params.body,
+    html: params.html,
+    to: params.to,
+    cc: params.cc,
+    bcc: params.bcc,
+  });
+
+  return {
+    success: true,
+    messageId: result.message_id,
+    mailboxAddress: result.mailbox_address,
+    status: result.status,
+  };
+}
+
+export async function handleMailDelete(
+  client: Wirebox,
+  config: ServerConfig,
+  params: {
+    messageId: string;
+    identity?: string;
+  }
+) {
+  const identity = await resolveIdentity(client, config, params.identity);
+  const result = await identity.deleteMessage(params.messageId);
+
+  return {
+    success: result.deleted,
+    messageId: result.message_id,
+  };
+}

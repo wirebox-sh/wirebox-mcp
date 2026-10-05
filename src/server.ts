@@ -7,7 +7,13 @@ import {
   handleImessageListConversations,
   handleImessageGetMessages,
 } from "./tools/imessage.js";
-import { handleMailSend, handleMailList } from "./tools/mail.js";
+import {
+  handleMailSend,
+  handleMailList,
+  handleMailGet,
+  handleMailReply,
+  handleMailDelete,
+} from "./tools/mail.js";
 
 export function createServer(customConfig?: Partial<ServerConfig>) {
   const config = { ...loadConfig(), ...customConfig };
@@ -155,6 +161,70 @@ export function createServer(customConfig?: Partial<ServerConfig>) {
     }) => {
       const client = getClient(config);
       const result = await handleMailList(client, config, params);
+      return {
+        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+      };
+    }
+  );
+ 
+  // 7. Mail Get
+  server.tool(
+    "wirebox_mail_get",
+    "Get the full content of an email message (subject, headers, text body, HTML, attachments).",
+    {
+      messageId: z.string().describe("ID of the email message to retrieve."),
+      identity: z.string().optional().describe("Agent identity handle or ID. Defaults to WIREBOX_IDENTITY."),
+    },
+    async (params: { messageId: string; identity?: string }) => {
+      const client = getClient(config);
+      const result = await handleMailGet(client, config, params);
+      return {
+        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+      };
+    }
+  );
+
+  // 8. Mail Reply
+  server.tool(
+    "wirebox_mail_reply",
+    "Reply to an existing email message, preserving thread context and RFC headers.",
+    {
+      messageId: z.string().describe("ID of the message to reply to."),
+      body: z.string().describe("Plain text response body."),
+      html: z.string().optional().describe("Optional HTML formatted body."),
+      to: z.string().optional().describe("Override recipient email (defaults to original sender)."),
+      cc: z.string().optional().describe("Optional CC recipient email address."),
+      bcc: z.string().optional().describe("Optional BCC recipient email address."),
+      identity: z.string().optional().describe("Agent identity handle or ID. Defaults to WIREBOX_IDENTITY."),
+    },
+    async (params: {
+      messageId: string;
+      body: string;
+      html?: string;
+      to?: string;
+      cc?: string;
+      bcc?: string;
+      identity?: string;
+    }) => {
+      const client = getClient(config);
+      const result = await handleMailReply(client, config, params);
+      return {
+        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+      };
+    }
+  );
+
+  // 9. Mail Delete
+  server.tool(
+    "wirebox_mail_delete",
+    "Permanently delete an email message from the mailbox.",
+    {
+      messageId: z.string().describe("ID of the email message to delete."),
+      identity: z.string().optional().describe("Agent identity handle or ID. Defaults to WIREBOX_IDENTITY."),
+    },
+    async (params: { messageId: string; identity?: string }) => {
+      const client = getClient(config);
+      const result = await handleMailDelete(client, config, params);
       return {
         content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
       };
