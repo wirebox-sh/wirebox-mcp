@@ -41,14 +41,10 @@ export function loadConfig(): ServerConfig {
 }
 
 export function getClient(config: ServerConfig): Wirebox {
-  if (!config.apiKey) {
-    throw new Error(
-      "WIREBOX_API_KEY is required. Please set the WIREBOX_API_KEY environment variable."
-    );
-  }
-
+  // Passing an empty key lets the SDK's own credential resolver run its full
+  // hierarchy (explicit key -> WIREBOX_API_KEY -> ~/.wirebox/credentials).
   return new Wirebox({
-    apiKey: config.apiKey,
+    apiKey: config.apiKey || undefined,
     baseUrl: config.baseUrl,
   });
 }
