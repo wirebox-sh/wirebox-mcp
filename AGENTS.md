@@ -43,3 +43,18 @@ gh release create v<x.y.z> --title "v<x.y.z>" --notes "<release notes>"
 ```
 
 Authentication is managed via OpenID Connect (OIDC) Trusted Publishing with cryptographic Sigstore provenance. Zero long-lived tokens exist in the repository.
+
+### Version Sync Points
+
+When bumping the version, keep all of these locations in sync:
+
+1. [`package.json`](package.json) — `"version"`
+2. [`src/version.ts`](src/version.ts) — `MCP_VERSION` (reported to hosts and the remote bridge)
+3. [`.cursor-plugin/plugin.json`](.cursor-plugin/plugin.json) and [`.claude-plugin/plugin.json`](.claude-plugin/plugin.json) — `"version"`
+
+### Step-by-Step Release Guide
+
+1. Bump the version at every sync point above (`npm version <x.y.z> --no-git-tag-version`, then update `src/version.ts` and the plugin manifests).
+2. Verify locally: `npm run typecheck && npm run build && npm test`.
+3. Commit `chore(release): bump version to <x.y.z>` and push to `main`; wait for CI to pass.
+4. Create the GitHub Release via `gh release create`; the Publish workflow performs the OIDC publish.

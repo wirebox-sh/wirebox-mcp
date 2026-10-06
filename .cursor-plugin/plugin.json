@@ -1,7 +1,7 @@
 {
   "name": "wirebox",
   "displayName": "Wirebox",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Give your AI agent real-world communication channels: iMessage, email, and agent identity management.",
   "author": {
     "name": "Wirebox",

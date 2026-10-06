@@ -8,6 +8,7 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 import type { Transport } from "@modelcontextprotocol/sdk/shared/transport.js";
 import type { ServerConfig } from "./config.js";
+import { MCP_VERSION } from "./version.js";
 
 /**
  * Creates a stdio-to-Streamable-HTTP bridge that delegates tool discovery
@@ -28,19 +29,19 @@ export async function createBridgeServer(
         headers: {
           Authorization: `Bearer ${config.apiKey}`,
           "X-API-Key": config.apiKey,
-          "User-Agent": "@wirebox-sh/mcp-bridge/0.1.0",
+          "User-Agent": `@wirebox-sh/mcp-bridge/${MCP_VERSION}`,
         },
       },
     });
 
   const server = new Server(
-    { name: "@wirebox-sh/mcp", version: "0.1.0" },
+    { name: "@wirebox-sh/mcp", version: MCP_VERSION },
     { capabilities: { tools: { listChanged: true } } }
   );
 
   const client = new Client({
     name: "@wirebox-sh/mcp-bridge",
-    version: "0.1.0",
+    version: MCP_VERSION,
   });
 
   client.setNotificationHandler(ToolListChangedNotificationSchema, () => {
