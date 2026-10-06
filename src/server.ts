@@ -14,6 +14,7 @@ import {
   handleMailReply,
   handleMailDelete,
 } from "./tools/mail.js";
+import { MCP_VERSION } from "./version.js";
 
 /**
  * The `identity` parameter, unless the host has pinned the identity — in which
@@ -40,7 +41,7 @@ export function createServer(customConfig?: Partial<ServerConfig>) {
 
   const server = new McpServer({
     name: "@wirebox-sh/mcp",
-    version: "0.1.0",
+    version: MCP_VERSION,
   });
 
   // 1. Identity Whoami
@@ -205,11 +206,14 @@ export function createServer(customConfig?: Partial<ServerConfig>) {
     "Get the full content of an email message (subject, headers, text body, HTML, attachments).",
     {
       messageId: z.string().describe("ID of the email message to retrieve."),
-      identity: z.string().optional().describe("Agent identity handle or ID. Defaults to WIREBOX_IDENTITY."),
+      ...identityParam(config),
     },
     async (params: { messageId: string; identity?: string }) => {
       const client = getClient(config);
-      const result = await handleMailGet(client, config, params);
+      const result = await handleMailGet(client, config, {
+        ...params,
+        identity: resolveIdentity(config, params.identity),
+      });
       return {
         content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
       };
@@ -227,7 +231,7 @@ export function createServer(customConfig?: Partial<ServerConfig>) {
       to: z.string().optional().describe("Override recipient email (defaults to original sender)."),
       cc: z.string().optional().describe("Optional CC recipient email address."),
       bcc: z.string().optional().describe("Optional BCC recipient email address."),
-      identity: z.string().optional().describe("Agent identity handle or ID. Defaults to WIREBOX_IDENTITY."),
+      ...identityParam(config),
     },
     async (params: {
       messageId: string;
@@ -239,7 +243,10 @@ export function createServer(customConfig?: Partial<ServerConfig>) {
       identity?: string;
     }) => {
       const client = getClient(config);
-      const result = await handleMailReply(client, config, params);
+      const result = await handleMailReply(client, config, {
+        ...params,
+        identity: resolveIdentity(config, params.identity),
+      });
       return {
         content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
       };
@@ -252,11 +259,14 @@ export function createServer(customConfig?: Partial<ServerConfig>) {
     "Permanently delete an email message from the mailbox.",
     {
       messageId: z.string().describe("ID of the email message to delete."),
-      identity: z.string().optional().describe("Agent identity handle or ID. Defaults to WIREBOX_IDENTITY."),
+      ...identityParam(config),
     },
     async (params: { messageId: string; identity?: string }) => {
       const client = getClient(config);
-      const result = await handleMailDelete(client, config, params);
+      const result = await handleMailDelete(client, config, {
+        ...params,
+        identity: resolveIdentity(config, params.identity),
+      });
       return {
         content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
       };
