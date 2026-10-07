@@ -112,6 +112,7 @@ Or install as a plugin from the repository root:
 
 * **`wirebox_mail_send`**: Send an email from the agent's identity mailbox (`to`, `subject`, `body`).
 * **`wirebox_mail_list`**: List email messages in the agent's mailbox (`folder`, `limit`, `offset`).
+* **`wirebox_mail_search`**: Full-text search across the mailbox, ranked by relevance (`query`, `limit`).
 
 ---
 

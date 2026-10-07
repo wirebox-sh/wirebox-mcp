@@ -70,6 +70,29 @@ export async function handleMailList(
   };
 }
 
+export async function handleMailSearch(
+  client: Wirebox,
+  config: ServerConfig,
+  params: {
+    query: string;
+    limit?: number;
+    identity?: string;
+  }
+) {
+  const identity = await resolveIdentity(client, config, params.identity);
+  const result = await identity.searchMessages({
+    q: params.query,
+    limit: params.limit,
+  });
+
+  return {
+    mailbox: identity.mailbox?.email_address,
+    query: params.query,
+    count: result.count,
+    matches: result.messages,
+  };
+}
+
 export async function handleMailGet(
   client: Wirebox,
   config: ServerConfig,

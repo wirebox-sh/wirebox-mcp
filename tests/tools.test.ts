@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { createServer } from "../src/server.js";
-import { handleMailGet, handleMailReply, handleMailDelete } from "../src/tools/mail.js";
+import { handleMailGet, handleMailReply, handleMailDelete, handleMailSearch } from "../src/tools/mail.js";
 
 describe("@wirebox-sh/mcp", () => {
   it("creates MCP server instance with configured tools", () => {
@@ -41,6 +41,20 @@ describe("@wirebox-sh/mcp", () => {
       deleteMessage: vi.fn().mockResolvedValue({
         deleted: true,
         message_id: "msg_123",
+      }),
+      searchMessages: vi.fn().mockResolvedValue({
+        messages: [
+          {
+            id: "msg_123",
+            direction: "inbound",
+            subject: "Hello Agent",
+            from_address: "alice@example.com",
+            snippet: "Can you help me?",
+            highlight: "Can you <b>help</b> me?",
+            created_at: "2026-10-05T00:00:00Z",
+          },
+        ],
+        count: 1,
       }),
     };
 
@@ -91,6 +105,18 @@ describe("@wirebox-sh/mcp", () => {
       expect(mockIdentity.deleteMessage).toHaveBeenCalledWith("msg_123");
       expect(result.success).toBe(true);
       expect(result.messageId).toBe("msg_123");
+    });
+
+    it("handleMailSearch returns ranked matches", async () => {
+      const result = await handleMailSearch(mockClient, mockConfig, {
+        query: "help",
+        limit: 5,
+      });
+
+      expect(mockIdentity.searchMessages).toHaveBeenCalledWith({ q: "help", limit: 5 });
+      expect(result.query).toBe("help");
+      expect(result.count).toBe(1);
+      expect(result.matches[0].highlight).toContain("help");
     });
   });
 });

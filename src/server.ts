@@ -10,6 +10,7 @@ import {
 import {
   handleMailSend,
   handleMailList,
+  handleMailSearch,
   handleMailGet,
   handleMailReply,
   handleMailDelete,
@@ -200,7 +201,31 @@ export function createServer(customConfig?: Partial<ServerConfig>) {
     }
   );
  
-  // 7. Mail Get
+  // 7. Mail Search
+  server.tool(
+    "wirebox_mail_search",
+    "Full-text search across email messages in this agent's mailbox by query, ranked by relevance. Matches subject, body, sender, and snippet.",
+    {
+      query: z.string().describe("Full-text search query."),
+      limit: z
+        .number()
+        .optional()
+        .describe("Maximum number of matches to return (1-100, default 50)."),
+      ...identityParam(config),
+    },
+    async (params: { query: string; limit?: number; identity?: string }) => {
+      const client = getClient(config);
+      const result = await handleMailSearch(client, config, {
+        ...params,
+        identity: resolveIdentity(config, params.identity),
+      });
+      return {
+        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+      };
+    }
+  );
+
+  // 8. Mail Get
   server.tool(
     "wirebox_mail_get",
     "Get the full content of an email message (subject, headers, text body, HTML, attachments).",
@@ -220,7 +245,7 @@ export function createServer(customConfig?: Partial<ServerConfig>) {
     }
   );
 
-  // 8. Mail Reply
+  // 9. Mail Reply
   server.tool(
     "wirebox_mail_reply",
     "Reply to an existing email message, preserving thread context and RFC headers.",
@@ -253,7 +278,7 @@ export function createServer(customConfig?: Partial<ServerConfig>) {
     }
   );
 
-  // 9. Mail Delete
+  // 10. Mail Delete
   server.tool(
     "wirebox_mail_delete",
     "Permanently delete an email message from the mailbox.",
