@@ -1,7 +1,7 @@
 {
   "name": "wirebox",
   "description": "Wirebox communication tools for AI agents — iMessage, email, and identity management.",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "author": {
     "name": "Wirebox",
     "email": "hello@wirebox.sh"
